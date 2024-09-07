@@ -122,4 +122,27 @@ public class ControlInventario implements IInventario {
         }
         return productos;
     }
+
+    @Override
+    public List<Producto> consultarProductosPorAgotarse() {
+        List<Producto> productos = new ArrayList<>();
+        try {
+            // Obtener la base de datos y la colección
+            MongoDatabase base = conexion.obtenerBaseDatos();
+            MongoCollection<Producto> coleccion = base.getCollection(nombreColeccion, Producto.class);
+
+            // Crear un filtro para productos cuya cantidad sea menor o igual a 5
+            Document filtro = new Document("cantidad", new Document("$lte", 5));
+
+            // Consultar los productos que coincidan con el filtro
+            coleccion.find(filtro).into(productos);
+
+            // Log de información
+            logger.log(Level.INFO, "Se encontraron {0} productos que están por agotarse", productos.size());
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error al consultar productos por agotarse", ex);
+        }
+        return productos;
+    }
+
 }

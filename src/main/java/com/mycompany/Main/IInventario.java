@@ -18,5 +18,7 @@ public interface IInventario {
 
     public List<Producto> consultarProductosPorCategoria(String nombreCategoria);
 
+    public List<Producto> consultarProductosPorAgotarse();
+
     public void actualizarInventario(String nombreProducto, int cantidad);
 }

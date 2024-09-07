@@ -4,20 +4,9 @@
  */
 package com.mycompany.GUI;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
 import com.mycompany.Conexion.Conexion;
 import com.mycompany.Conexion.IConexion;
 import com.mycompany.Main.ControlInventario;
@@ -25,8 +14,10 @@ import com.mycompany.Main.GestionInventario;
 import com.mycompany.Main.IInventariar;
 import com.mycompany.Main.IInventario;
 import com.mycompany.Main.Producto;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.awt.Color;
+import java.awt.Component;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
@@ -151,8 +142,25 @@ public class frmInicio extends javax.swing.JFrame {
             inventarioEncontrado.addRow(fila);
         }
 
-        // Asignar el modelo a la tabla
+        // Crear un JTable con el modelo
         jTInventario.setModel(inventarioEncontrado);
+
+        // Asignar un renderizador personalizado para la columna "Cantidad"
+        jTInventario.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                // Verificar si el valor es menor o igual a 5 y cambiar el color de la letra
+                if (value instanceof Number && ((Number) value).intValue() <= 5) {
+                    cell.setForeground(Color.RED);
+                } else {
+                    cell.setForeground(Color.BLACK);
+                }
+
+                return cell;
+            }
+        });
     }
 
     public void resetCantidades() {
@@ -184,6 +192,11 @@ public class frmInicio extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "No se encontraron clientes con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void buscarPorAgotarse() {
+        List<Producto> inventarioDespliegue = inventario.consultarProductosPorAgotarse();
+        llenarTabla(inventarioDespliegue);
     }
 
     /**
@@ -535,7 +548,7 @@ public class frmInicio extends javax.swing.JFrame {
     }//GEN-LAST:event_txtBuscadorActionPerformed
 
     private void btnReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteActionPerformed
-
+        buscarPorAgotarse();
     }//GEN-LAST:event_btnReporteActionPerformed
 
     /**
