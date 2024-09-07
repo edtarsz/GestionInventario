@@ -10,7 +10,6 @@ package com.mycompany.Main;
  */
 public class Producto {
 
-    private int id;
     private String nombre;
     private String descripcion;
     private String categoria;
@@ -21,15 +20,6 @@ public class Producto {
     }
 
     public Producto(String nombre, String descripcion, String categoria, double precio, int cantidad) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.categoria = categoria;
-        this.precio = precio;
-        this.cantidad = cantidad;
-    }
-
-    public Producto(int id, String nombre, String descripcion, String categoria, double precio, int cantidad) {
-        this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.categoria = categoria;
@@ -76,8 +66,6 @@ public class Producto {
     public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
-    
-    
 
     @Override
     public String toString() {
@@ -91,5 +79,4 @@ public class Producto {
         sb.append('}');
         return sb.toString();
     }
-
 }
