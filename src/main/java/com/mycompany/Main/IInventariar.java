@@ -12,7 +12,7 @@ public interface IInventariar {
 
     void agregarNuevoProducto(Producto nuevoProducto);
 
-    void actualizarProducto(String nombreProducto);
+    void actualizarProducto(String nombreProducto, Producto productoActualizado);
 
     void eliminarProducto(String nombreProducto);
 }
