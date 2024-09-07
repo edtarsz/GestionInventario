@@ -4,17 +4,125 @@
  */
 package com.mycompany.GUI;
 
+import com.mycompany.Main.IInventariar;
+import com.mycompany.Main.Producto;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Ramosz
  */
 public class frmInicio extends javax.swing.JFrame {
 
+    IInventariar inventariar;
+//    IInventario inventario;
+
     /**
      * Creates new form frmInicio
      */
     public frmInicio() {
+        llenarTabla();
         initComponents();
+    }
+
+    public boolean validarDatos() {
+        // Obtener los valores de los campos de texto
+        String nombre = txtNombre.getText();
+        String descripcion = txtDescripcion.getText();
+        String cantidadStr = txtCantidad.getText();
+        String precioStr = txtPrecio.getText();
+
+        // Verificar que el campo de nombre no esté vacío
+        if (nombre.isEmpty()) {
+            // Mostrar mensaje de error
+            mostrarMensajeError("El nombre no puede estar vacío.");
+            return false;
+        }
+
+        // Verificar que el campo de descripción no esté vacío
+        if (descripcion.isEmpty()) {
+            // Mostrar mensaje de error
+            mostrarMensajeError("La descripción no puede estar vacía.");
+            return false;
+        }
+
+        // Verificar que el campo de cantidad no esté vacío
+        if (cantidadStr.isEmpty()) {
+            // Mostrar mensaje de error
+            mostrarMensajeError("La cantidad no puede estar vacía.");
+            return false;
+        }
+
+        // Verificar que el campo de precio no esté vacío
+        if (precioStr.isEmpty()) {
+            // Mostrar mensaje de error
+            mostrarMensajeError("El precio no puede estar vacío.");
+            return false;
+        }
+
+        // Verificar que el campo de cantidad sea un número válido
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(cantidadStr);
+            if (cantidad <= 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e) {
+            // Mostrar mensaje de error
+            mostrarMensajeError("La cantidad debe ser un número entero mayor que cero.");
+            return false;
+        }
+
+        // Verificar que el campo de precio sea un número válido
+        double precio;
+        try {
+            precio = Double.parseDouble(precioStr);
+            if (precio <= 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e) {
+            // Mostrar mensaje de error
+            mostrarMensajeError("El precio debe ser un número decimal mayor que cero.");
+            return false;
+        }
+
+        // Todos los campos son válidos
+        return true;
+    }
+
+    public void mostrarMensajeError(String mensaje) {
+        // Mostrar un cuadro de diálogo emergente con el mensaje de error
+        JOptionPane.showMessageDialog(null, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void llenarTabla() {
+        List<Producto> inventarioDespliegue = inventario.obtenerInventarioCompleto();
+        DefaultTableModel inventarioEncontrado = new DefaultTableModel();
+        inventarioEncontrado.addColumn("Nombre");
+        inventarioEncontrado.addColumn("Cantidad");
+        inventarioEncontrado.addColumn("Descripción");
+        inventarioEncontrado.addColumn("Precio");
+        inventarioEncontrado.addColumn("Categoría");
+
+        for (NuevoProductoDTO inventario : inventarioDespliegue) {
+            Object[] fila = {
+                inventario.getNombre(),
+                inventario.getCantidad(),
+                inventario.getDescripcion(),
+                inventario.getPrecio(),
+                inventario.getCategoria(),};
+            inventarioEncontrado.addRow(fila);
+        }
+        jTInventario.setModel(inventarioEncontrado);
+    }
+
+    public void resetCantidades() {
+        txtNombre.setText("");
+        txtDescripcion.setText("");
+        txtPrecio.setText("");
+        txtCantidad.setText("");
     }
 
     /**
@@ -29,18 +137,18 @@ public class frmInicio extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTInventario = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        txtNombre = new javax.swing.JTextField();
+        txtDescripcion = new javax.swing.JTextField();
+        txtPrecio = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        txtCantidad = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -54,7 +162,7 @@ public class frmInicio extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setText("Gestión De Inventarios");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTInventario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -65,10 +173,15 @@ public class frmInicio extends javax.swing.JFrame {
                 "Producto", "Descripción", "Precio", "Cantidad", "ID"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(jTInventario);
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton1.setText("Agregar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jButton2.setText("Eliminar");
@@ -108,13 +221,13 @@ public class frmInicio extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1)
+                    .addComponent(txtNombre)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField2)
+                    .addComponent(txtDescripcion)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField3)
+                    .addComponent(txtPrecio)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField4)
+                    .addComponent(txtCantidad)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -135,19 +248,19 @@ public class frmInicio extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1)
@@ -168,6 +281,15 @@ public class frmInicio extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if (validarDatos()) {
+            Producto nuevoProducto = new Producto(txtNombre.getText(), txtDescripcion.getText(), Double.parseDouble(txtPrecio.getText()), Integer.parseInt(txtCantidad.getText()));
+            inventariar.agregarNuevoProducto(nuevoProducto);
+            resetCantidades();
+            llenarTabla();
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -216,10 +338,10 @@ public class frmInicio extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTable jTInventario;
+    private javax.swing.JTextField txtCantidad;
+    private javax.swing.JTextField txtDescripcion;
+    private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtPrecio;
     // End of variables declaration//GEN-END:variables
 }
