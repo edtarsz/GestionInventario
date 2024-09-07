@@ -4,7 +4,12 @@
  */
 package com.mycompany.GUI;
 
+import com.mycompany.Conexion.Conexion;
+import com.mycompany.Conexion.IConexion;
+import com.mycompany.Main.ControlInventario;
+import com.mycompany.Main.GestionInventario;
 import com.mycompany.Main.IInventariar;
+import com.mycompany.Main.IInventario;
 import com.mycompany.Main.Producto;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -17,12 +22,16 @@ import javax.swing.table.DefaultTableModel;
 public class frmInicio extends javax.swing.JFrame {
 
     IInventariar inventariar;
-//    IInventario inventario;
+    IInventario inventario;
+    IConexion conexion;
 
     /**
      * Creates new form frmInicio
      */
     public frmInicio() {
+        conexion = new Conexion();
+        this.inventariar = new GestionInventario(conexion);
+        this.inventario = new ControlInventario(conexion);
         llenarTabla();
         initComponents();
     }
@@ -101,18 +110,16 @@ public class frmInicio extends javax.swing.JFrame {
         List<Producto> inventarioDespliegue = inventario.obtenerInventarioCompleto();
         DefaultTableModel inventarioEncontrado = new DefaultTableModel();
         inventarioEncontrado.addColumn("Nombre");
-        inventarioEncontrado.addColumn("Cantidad");
         inventarioEncontrado.addColumn("Descripción");
         inventarioEncontrado.addColumn("Precio");
-        inventarioEncontrado.addColumn("Categoría");
+        inventarioEncontrado.addColumn("Cantidad");
 
-        for (NuevoProductoDTO inventario : inventarioDespliegue) {
+        for (Producto inventarioDesplegar : inventarioDespliegue) {
             Object[] fila = {
-                inventario.getNombre(),
-                inventario.getCantidad(),
-                inventario.getDescripcion(),
-                inventario.getPrecio(),
-                inventario.getCategoria(),};
+                inventarioDesplegar.getNombre(),
+                inventarioDesplegar.getDescripcion(),
+                inventarioDesplegar.getPrecio(),
+                inventarioDesplegar.getCantidad(),};
             inventarioEncontrado.addRow(fila);
         }
         jTInventario.setModel(inventarioEncontrado);
@@ -276,6 +283,7 @@ public class frmInicio extends javax.swing.JFrame {
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 690, 480));
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

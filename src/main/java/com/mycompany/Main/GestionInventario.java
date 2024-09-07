@@ -20,6 +20,10 @@ public class GestionInventario implements IInventariar {
     public String nombreColeccion = "productos";
     static final Logger logger = Logger.getLogger(GestionInventario.class.getName());
 
+    public GestionInventario(IConexion conexion) {
+        this.conexion = conexion;
+    }
+
     @Override
     public void agregarNuevoProducto(Producto nuevoProducto) {
         try {
