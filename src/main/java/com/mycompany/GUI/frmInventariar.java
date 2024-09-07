@@ -24,6 +24,7 @@ public class frmInventariar extends javax.swing.JFrame {
     IInventariar inventariar;
     IInventario inventario;
     IConexion conexion;
+    List<Producto> productos = null;
 
     /**
      * Creates new form frmInventariar
@@ -33,7 +34,7 @@ public class frmInventariar extends javax.swing.JFrame {
         conexion = new Conexion();
         this.inventariar = new GestionInventario(conexion);
         this.inventario = new ControlInventario(conexion);
-        llenarTabla();
+        llenarTabla(productos);
     }
 
     public void resetCantidades() {
@@ -41,26 +42,68 @@ public class frmInventariar extends javax.swing.JFrame {
         txtInventariar.setText("");
     }
 
-    private void llenarTabla() {
-        List<Producto> inventarioDespliegue = inventario.obtenerInventarioCompleto();
+    private void llenarTabla(List<Producto> productos) {
+        // Crear un modelo de tabla y añadir las columnas
         DefaultTableModel inventarioEncontrado = new DefaultTableModel();
         inventarioEncontrado.addColumn("Nombre");
+        inventarioEncontrado.addColumn("Descripción");
         inventarioEncontrado.addColumn("Categoría");
+        inventarioEncontrado.addColumn("Precio");
         inventarioEncontrado.addColumn("Cantidad");
 
+        // Determinar la fuente de datos para llenar la tabla
+        List<Producto> inventarioDespliegue;
+        if (productos == null) {
+            // Si productos es null, obtener el inventario completo
+            inventarioDespliegue = inventario.obtenerInventarioCompleto();
+        } else {
+            // Usar la lista proporcionada
+            inventarioDespliegue = productos;
+        }
+
+        // Añadir los datos al modelo de tabla
         for (Producto inventarioDesplegar : inventarioDespliegue) {
             Object[] fila = {
                 inventarioDesplegar.getNombre(),
+                inventarioDesplegar.getDescripcion(),
                 inventarioDesplegar.getCategoria(),
-                inventarioDesplegar.getCantidad(),};
+                inventarioDesplegar.getPrecio(),
+                inventarioDesplegar.getCantidad()
+            };
             inventarioEncontrado.addRow(fila);
         }
+
+        // Asignar el modelo a la tabla
         jTInventario.setModel(inventarioEncontrado);
     }
 
     public void mostrarMensajeError(String mensaje) {
         // Mostrar un cuadro de diálogo emergente con el mensaje de error
         JOptionPane.showMessageDialog(null, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Busca clientes por nombre y actualiza la tabla con los resultados de la
+     * búsqueda.
+     *
+     * @param nombre El nombre del cliente a buscar.
+     */
+    private void buscarPorNombre(String nombre) {
+        List<Producto> inventarioDespliegue = inventario.consultarProductosPorNombre(nombre);
+        if (inventarioDespliegue != null && !inventarioDespliegue.isEmpty()) {
+            llenarTabla(inventarioDespliegue);
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontraron clientes con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void buscarPorCateogoria(String nombre) {
+        List<Producto> inventarioDespliegue = inventario.consultarProductosPorCategoria(nombre);
+        if (inventarioDespliegue != null && !inventarioDespliegue.isEmpty()) {
+            llenarTabla(inventarioDespliegue);
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontraron clientes con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -83,6 +126,10 @@ public class frmInventariar extends javax.swing.JFrame {
         txtInventariar = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        btnBuscar = new javax.swing.JButton();
+        txtBuscador = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addMouseListener(new java.awt.event.MouseAdapter() {
@@ -144,28 +191,59 @@ public class frmInventariar extends javax.swing.JFrame {
             }
         });
 
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel7.setText("Buscar por");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nombre", "Categoria" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
+
+        txtBuscador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBuscadorActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGap(25, 25, 25)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel1)))
-                .addGap(18, 18, 18)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(jButton1)
+                            .addGap(123, 123, 123)
+                            .addComponent(jLabel1))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel7)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jLabel2)
                         .addComponent(txtNombre)
-                        .addComponent(btnInventariar, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+                        .addComponent(btnInventariar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(Limpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtInventariar))
+                        .addComponent(txtInventariar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel3))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addGap(36, 36, 36))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -174,13 +252,18 @@ public class frmInventariar extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jButton1))
-                .addGap(30, 30, 30)
+                .addGap(40, 40, 40)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBuscar)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel7))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -188,8 +271,12 @@ public class frmInventariar extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnInventariar)
                         .addGap(18, 18, 18)
-                        .addComponent(Limpiar)))
-                .addContainerGap(63, Short.MAX_VALUE))
+                        .addComponent(Limpiar)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(66, 66, 66))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -233,7 +320,7 @@ public class frmInventariar extends javax.swing.JFrame {
 
             // Actualizar la tabla y limpiar la lista de productos
             resetCantidades();
-            llenarTabla();
+            llenarTabla(productos);
         } else {
             resetCantidades();
             // El usuario seleccionó "No" o cerró el diálogo, no realizar ninguna acción adicional
@@ -261,16 +348,41 @@ public class frmInventariar extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        String busqueda = txtBuscador.getText().trim();
+        String opcionSeleccionada = (String) jComboBox1.getSelectedItem();
+
+        if (opcionSeleccionada.equalsIgnoreCase("Nombre")) {
+            buscarPorNombre(busqueda);
+        } else if (opcionSeleccionada.equalsIgnoreCase("Categoria")) {
+            buscarPorCateogoria(busqueda);
+        } else if (opcionSeleccionada.equalsIgnoreCase("")) {
+            llenarTabla(productos);
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void txtBuscadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscadorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBuscadorActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Limpiar;
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnInventariar;
     private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTInventario;
+    private javax.swing.JTextField txtBuscador;
     private javax.swing.JTextField txtInventariar;
     private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables

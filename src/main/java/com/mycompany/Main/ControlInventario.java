@@ -78,4 +78,48 @@ public class ControlInventario implements IInventario {
             logger.log(Level.SEVERE, "Error al actualizar inventario", ex);
         }
     }
+
+    @Override
+    public List<Producto> consultarProductosPorNombre(String nombreProducto) {
+        List<Producto> productos = new ArrayList<>();
+        try {
+            // Obtener la base de datos y la colección
+            MongoDatabase base = conexion.obtenerBaseDatos();
+            MongoCollection<Producto> coleccion = base.getCollection(nombreColeccion, Producto.class);
+
+            // Crear una expresión regular para buscar productos cuyo nombre contenga la cadena proporcionada
+            Document filtro = new Document("nombre", new Document("$regex", nombreProducto).append("$options", "i"));
+
+            // Consultar los productos que coincidan con el filtro
+            coleccion.find(filtro).into(productos);
+
+            // Log de información
+            logger.log(Level.INFO, "Se encontraron {0} productos con el nombre que contiene '{1}'", new Object[]{productos.size(), nombreProducto});
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error al consultar productos por nombre", ex);
+        }
+        return productos;
+    }
+
+    @Override
+    public List<Producto> consultarProductosPorCategoria(String nombreCategoria) {
+        List<Producto> productos = new ArrayList<>();
+        try {
+            // Obtener la base de datos y la colección
+            MongoDatabase base = conexion.obtenerBaseDatos();
+            MongoCollection<Producto> coleccion = base.getCollection(nombreColeccion, Producto.class);
+
+            // Crear una expresión regular para buscar productos cuyo nombre contenga la cadena proporcionada
+            Document filtro = new Document("categoria", new Document("$regex", nombreCategoria).append("$options", "i"));
+
+            // Consultar los productos que coincidan con el filtro
+            coleccion.find(filtro).into(productos);
+
+            // Log de información
+            logger.log(Level.INFO, "Se encontraron {0} productos con el nombre que contiene '{1}'", new Object[]{productos.size(), nombreCategoria});
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error al consultar productos por nombre", ex);
+        }
+        return productos;
+    }
 }

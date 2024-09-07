@@ -24,6 +24,7 @@ public class frmInicio extends javax.swing.JFrame {
     IInventariar inventariar;
     IInventario inventario;
     IConexion conexion;
+    List<Producto> productos = null;
 
     /**
      * Creates new form frmInicio
@@ -33,7 +34,7 @@ public class frmInicio extends javax.swing.JFrame {
         conexion = new Conexion();
         this.inventariar = new GestionInventario(conexion);
         this.inventario = new ControlInventario(conexion);
-        llenarTabla();
+        llenarTabla(productos);
     }
 
     public boolean validarDatos() {
@@ -106,8 +107,8 @@ public class frmInicio extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    private void llenarTabla() {
-        List<Producto> inventarioDespliegue = inventario.obtenerInventarioCompleto();
+    private void llenarTabla(List<Producto> productos) {
+        // Crear un modelo de tabla y añadir las columnas
         DefaultTableModel inventarioEncontrado = new DefaultTableModel();
         inventarioEncontrado.addColumn("Nombre");
         inventarioEncontrado.addColumn("Descripción");
@@ -115,15 +116,29 @@ public class frmInicio extends javax.swing.JFrame {
         inventarioEncontrado.addColumn("Precio");
         inventarioEncontrado.addColumn("Cantidad");
 
+        // Determinar la fuente de datos para llenar la tabla
+        List<Producto> inventarioDespliegue;
+        if (productos == null) {
+            // Si productos es null, obtener el inventario completo
+            inventarioDespliegue = inventario.obtenerInventarioCompleto();
+        } else {
+            // Usar la lista proporcionada
+            inventarioDespliegue = productos;
+        }
+
+        // Añadir los datos al modelo de tabla
         for (Producto inventarioDesplegar : inventarioDespliegue) {
             Object[] fila = {
                 inventarioDesplegar.getNombre(),
                 inventarioDesplegar.getDescripcion(),
                 inventarioDesplegar.getCategoria(),
                 inventarioDesplegar.getPrecio(),
-                inventarioDesplegar.getCantidad(),};
+                inventarioDesplegar.getCantidad()
+            };
             inventarioEncontrado.addRow(fila);
         }
+
+        // Asignar el modelo a la tabla
         jTInventario.setModel(inventarioEncontrado);
     }
 
@@ -132,6 +147,30 @@ public class frmInicio extends javax.swing.JFrame {
         txtDescripcion.setText("");
         txtPrecio.setText("");
         txtCantidad.setText("");
+    }
+
+    /**
+     * Busca clientes por nombre y actualiza la tabla con los resultados de la
+     * búsqueda.
+     *
+     * @param nombre El nombre del cliente a buscar.
+     */
+    private void buscarPorNombre(String nombre) {
+        List<Producto> inventarioDespliegue = inventario.consultarProductosPorNombre(nombre);
+        if (inventarioDespliegue != null && !inventarioDespliegue.isEmpty()) {
+            llenarTabla(inventarioDespliegue);
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontraron clientes con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void buscarPorCateogoria(String nombre) {
+        List<Producto> inventarioDespliegue = inventario.consultarProductosPorCategoria(nombre);
+        if (inventarioDespliegue != null && !inventarioDespliegue.isEmpty()) {
+            llenarTabla(inventarioDespliegue);
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontraron clientes con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -162,11 +201,15 @@ public class frmInicio extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         cmbCategoria = new javax.swing.JComboBox<>();
         jButton1 = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        btnBuscar = new javax.swing.JButton();
+        txtBuscador = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(770, 500));
-        setMinimumSize(new java.awt.Dimension(770, 500));
-        setPreferredSize(new java.awt.Dimension(770, 500));
+        setMaximumSize(new java.awt.Dimension(780, 550));
+        setMinimumSize(new java.awt.Dimension(780, 550));
+        setPreferredSize(new java.awt.Dimension(780, 550));
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -258,6 +301,29 @@ public class frmInicio extends javax.swing.JFrame {
             }
         });
 
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel7.setText("Buscar por");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nombre", "Categoria" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
+
+        txtBuscador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBuscadorActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -266,8 +332,21 @@ public class frmInicio extends javax.swing.JFrame {
                 .addGap(21, 21, 21)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 526, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addComponent(jButton1)
+                        .addGap(144, 144, 144)
+                        .addComponent(jLabel1))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 331, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 520, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, 521, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(23, 23, 23)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
                             .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -282,18 +361,14 @@ public class frmInicio extends javax.swing.JFrame {
                                     .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(btnActualizar))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btnLimpiar, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                                    .addComponent(btnLimpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addComponent(jLabel6)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(cmbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(152, 152, 152)
-                        .addComponent(jLabel1)))
-                .addContainerGap(47, Short.MAX_VALUE))
+                                .addComponent(cmbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -302,13 +377,9 @@ public class frmInicio extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jButton1))
+                .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(33, 33, 33)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -316,7 +387,7 @@ public class frmInicio extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cmbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -335,11 +406,20 @@ public class frmInicio extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnActualizar)
-                            .addComponent(btnLimpiar))
-                        .addGap(62, 62, 62))))
+                            .addComponent(btnLimpiar)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnBuscar))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 69, Short.MAX_VALUE))
         );
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 790, 480));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 770, 520));
         jPanel1.getAccessibleContext().setAccessibleName("");
 
         pack();
@@ -352,7 +432,7 @@ public class frmInicio extends javax.swing.JFrame {
             String nombreProducto = txtNombre.getText();
             inventariar.eliminarProducto(nombreProducto);
             resetCantidades();
-            llenarTabla();
+            llenarTabla(productos);
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
@@ -361,7 +441,7 @@ public class frmInicio extends javax.swing.JFrame {
             Producto nuevoProducto = new Producto(txtNombre.getText(), txtDescripcion.getText(), cmbCategoria.getSelectedItem().toString(), Double.parseDouble(txtPrecio.getText()), Integer.parseInt(txtCantidad.getText()));
             inventariar.agregarNuevoProducto(nuevoProducto);
             resetCantidades();
-            llenarTabla();
+            llenarTabla(productos);
         }
     }//GEN-LAST:event_btnAgregarActionPerformed
 
@@ -386,7 +466,7 @@ public class frmInicio extends javax.swing.JFrame {
             String nombrePrevio = jTInventario.getValueAt(seleccion, 0).toString();
             Producto nuevoProducto = new Producto(txtNombre.getText(), txtDescripcion.getText(), cmbCategoria.getSelectedItem().toString(), Double.parseDouble(txtPrecio.getText()), Integer.parseInt(txtCantidad.getText()));
             inventariar.actualizarProducto(nombrePrevio, nuevoProducto);
-            llenarTabla();
+            llenarTabla(productos);
             resetCantidades();
         }
     }//GEN-LAST:event_btnActualizarActionPerformed
@@ -407,6 +487,27 @@ public class frmInicio extends javax.swing.JFrame {
         voc.setVisible(true);
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        String busqueda = txtBuscador.getText().trim();
+        String opcionSeleccionada = (String) jComboBox1.getSelectedItem();
+
+        if (opcionSeleccionada.equalsIgnoreCase("Nombre")) {
+            buscarPorNombre(busqueda);
+        } else if (opcionSeleccionada.equalsIgnoreCase("Categoria")) {
+            buscarPorCateogoria(busqueda);
+        } else if (opcionSeleccionada.equalsIgnoreCase("")) {
+            llenarTabla(productos);
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void txtBuscadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscadorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBuscadorActionPerformed
 
     /**
      * @param args the command line arguments
@@ -446,19 +547,23 @@ public class frmInicio extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JComboBox<String> cmbCategoria;
     private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTInventario;
+    private javax.swing.JTextField txtBuscador;
     private javax.swing.JTextField txtCantidad;
     private javax.swing.JTextField txtDescripcion;
     private javax.swing.JTextField txtNombre;
