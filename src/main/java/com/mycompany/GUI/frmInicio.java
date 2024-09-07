@@ -4,6 +4,20 @@
  */
 package com.mycompany.GUI;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.mycompany.Conexion.Conexion;
 import com.mycompany.Conexion.IConexion;
 import com.mycompany.Main.ControlInventario;
@@ -11,9 +25,8 @@ import com.mycompany.Main.GestionInventario;
 import com.mycompany.Main.IInventariar;
 import com.mycompany.Main.IInventario;
 import com.mycompany.Main.Producto;
-import java.util.List;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 /**
  *
@@ -205,6 +218,7 @@ public class frmInicio extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         btnBuscar = new javax.swing.JButton();
         txtBuscador = new javax.swing.JTextField();
+        btnReporte = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(780, 550));
@@ -324,6 +338,13 @@ public class frmInicio extends javax.swing.JFrame {
             }
         });
 
+        btnReporte.setText("Generar Reporte");
+        btnReporte.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReporteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -331,10 +352,6 @@ public class frmInicio extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(144, 144, 144)
-                        .addComponent(jLabel1))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -367,8 +384,15 @@ public class frmInicio extends javax.swing.JFrame {
                             .addComponent(jLabel6)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(cmbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(27, Short.MAX_VALUE))
+                                .addComponent(cmbCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(27, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnReporte)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(118, 118, 118))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -376,7 +400,8 @@ public class frmInicio extends javax.swing.JFrame {
                 .addGap(24, 24, 24)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(btnReporte))
                 .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -509,6 +534,10 @@ public class frmInicio extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtBuscadorActionPerformed
 
+    private void btnReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteActionPerformed
+
+    }//GEN-LAST:event_btnReporteActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -550,6 +579,7 @@ public class frmInicio extends javax.swing.JFrame {
     private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnLimpiar;
+    private javax.swing.JButton btnReporte;
     private javax.swing.JComboBox<String> cmbCategoria;
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;

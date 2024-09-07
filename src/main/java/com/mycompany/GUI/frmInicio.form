@@ -66,11 +66,6 @@
                   <EmptySpace min="21" pref="21" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="jButton1" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="144" max="-2" attributes="0"/>
-                          <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Group type="102" attributes="0">
                                   <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
@@ -111,9 +106,17 @@
                                   <Component id="cmbCategoria" min="-2" pref="177" max="-2" attributes="0"/>
                               </Group>
                           </Group>
+                          <EmptySpace pref="27" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jButton1" min="-2" pref="86" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="btnReporte" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="118" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace pref="27" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -124,6 +127,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnReporte" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -394,6 +398,14 @@
         <Component class="javax.swing.JTextField" name="txtBuscador">
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtBuscadorActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnReporte">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Generar Reporte"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnReporteActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
