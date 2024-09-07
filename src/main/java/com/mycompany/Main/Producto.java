@@ -13,23 +13,26 @@ public class Producto {
     private int id;
     private String nombre;
     private String descripcion;
+    private String categoria;
     private double precio;
     private int cantidad;
 
     public Producto() {
     }
 
-    public Producto(String nombre, String descripcion, double precio, int cantidad) {
+    public Producto(String nombre, String descripcion, String categoria, double precio, int cantidad) {
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.categoria = categoria;
         this.precio = precio;
         this.cantidad = cantidad;
     }
 
-    public Producto(int id, String nombre, String descripcion, double precio, int cantidad) {
+    public Producto(int id, String nombre, String descripcion, String categoria, double precio, int cantidad) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.categoria = categoria;
         this.precio = precio;
         this.cantidad = cantidad;
     }
@@ -66,12 +69,23 @@ public class Producto {
         this.cantidad = cantidad;
     }
 
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+    
+    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Producto{");
         sb.append("nombre=").append(nombre);
         sb.append(", descripcion=").append(descripcion);
+        sb.append(", categoria=").append(categoria);
         sb.append(", precio=").append(precio);
         sb.append(", cantidad=").append(cantidad);
         sb.append('}');
