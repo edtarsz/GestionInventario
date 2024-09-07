@@ -12,6 +12,7 @@ import com.mycompany.Main.IInventariar;
 import com.mycompany.Main.IInventario;
 import com.mycompany.Main.Producto;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -28,14 +29,15 @@ public class frmInventariar extends javax.swing.JFrame {
      * Creates new form frmInventariar
      */
     public frmInventariar() {
+        initComponents();
         conexion = new Conexion();
         this.inventariar = new GestionInventario(conexion);
         this.inventario = new ControlInventario(conexion);
         llenarTabla();
-        initComponents();
     }
 
     public void resetCantidades() {
+        txtNombre.setText("");
         txtInventariar.setText("");
     }
 
@@ -43,15 +45,22 @@ public class frmInventariar extends javax.swing.JFrame {
         List<Producto> inventarioDespliegue = inventario.obtenerInventarioCompleto();
         DefaultTableModel inventarioEncontrado = new DefaultTableModel();
         inventarioEncontrado.addColumn("Nombre");
+        inventarioEncontrado.addColumn("Categoría");
         inventarioEncontrado.addColumn("Cantidad");
 
         for (Producto inventarioDesplegar : inventarioDespliegue) {
             Object[] fila = {
                 inventarioDesplegar.getNombre(),
+                inventarioDesplegar.getCategoria(),
                 inventarioDesplegar.getCantidad(),};
             inventarioEncontrado.addRow(fila);
         }
         jTInventario.setModel(inventarioEncontrado);
+    }
+
+    public void mostrarMensajeError(String mensaje) {
+        // Mostrar un cuadro de diálogo emergente con el mensaje de error
+        JOptionPane.showMessageDialog(null, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -69,10 +78,18 @@ public class frmInventariar extends javax.swing.JFrame {
         jTInventario = new javax.swing.JTable();
         btnInventariar = new javax.swing.JButton();
         Limpiar = new javax.swing.JButton();
-        txtInventariar = new javax.swing.JTextField();
+        txtNombre = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
+        txtInventariar = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                formMouseClicked(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(700, 500));
@@ -88,9 +105,14 @@ public class frmInventariar extends javax.swing.JFrame {
                 {null, null, null}
             },
             new String [] {
-                "Producto", "Cantidad", "ID"
+                "Producto", "Categoría", "Cantidad"
             }
         ));
+        jTInventario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTInventarioMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTInventario);
 
         btnInventariar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -102,7 +124,7 @@ public class frmInventariar extends javax.swing.JFrame {
         });
 
         Limpiar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        Limpiar.setText("Borrar");
+        Limpiar.setText("Limpiar");
         Limpiar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 LimpiarActionPerformed(evt);
@@ -112,39 +134,61 @@ public class frmInventariar extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("Inventariar (Cantidad)");
 
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setText("Producto");
+
+        jButton1.setText("Regresar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(21, 21, 21)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel2)
-                    .addComponent(txtInventariar)
-                    .addComponent(btnInventariar, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
-                    .addComponent(Limpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel2)
+                        .addComponent(txtNombre)
+                        .addComponent(btnInventariar, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+                        .addComponent(Limpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtInventariar))
+                    .addComponent(jLabel3))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addComponent(jLabel1)
-                .addGap(33, 33, 33)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton1))
+                .addGap(30, 30, 30)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtInventariar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnInventariar)
                         .addGap(18, 18, 18)
-                        .addComponent(Limpiar))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 328, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(Limpiar)))
                 .addContainerGap(63, Short.MAX_VALUE))
         );
 
@@ -162,59 +206,72 @@ public class frmInventariar extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnInventariarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventariarActionPerformed
+        // Crear un StringBuilder para almacenar los cambios en el inventario
+        StringBuilder cambiosInventario = new StringBuilder();
+        int seleccion = jTInventario.getSelectedRow();
+        String nombrePrevio = jTInventario.getValueAt(seleccion, 0).toString();
 
+        cambiosInventario.append("Producto: ").append(nombrePrevio).append(", Cantidad a actualizar: ").append(txtInventariar.getText()).append("x\n");
+
+        if (seleccion == -1) {
+            // No se ha seleccionado ninguna fila, mostrar un mensaje o manejar el caso de manera apropiada
+            mostrarMensajeError("No se ha seleccionado ningún producto.");
+            return; // Salir del método para evitar continuar con la lógica que depende de la selección
+        }
+
+        // Mostrar un JOptionPane para confirmar la actualización del inventario
+        int opcionConfirmacion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar la actualización del inventario?\n\nCambios a realizar:\n\n" + cambiosInventario.toString(), "Confirmar actualización de inventario", JOptionPane.YES_NO_OPTION);
+
+        // Verificar la respuesta del usuario
+        if (opcionConfirmacion == JOptionPane.YES_OPTION) {
+            // Iterar sobre la lista de productos para actualizar el inventario
+            inventario.actualizarInventario(nombrePrevio, Integer.parseInt(txtInventariar.getText()));
+
+            // Actualizar la tabla y limpiar la lista de productos
+            resetCantidades();
+            llenarTabla();
+        } else {
+            resetCantidades();
+            // El usuario seleccionó "No" o cerró el diálogo, no realizar ninguna acción adicional
+        }
     }//GEN-LAST:event_btnInventariarActionPerformed
 
     private void LimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LimpiarActionPerformed
         resetCantidades();
     }//GEN-LAST:event_LimpiarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(frmInventariar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(frmInventariar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(frmInventariar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(frmInventariar.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formMouseClicked
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new frmInventariar().setVisible(true);
-            }
-        });
-    }
+    private void jTInventarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTInventarioMouseClicked
+        // TODO add your handling code here:
+        int seleccion = jTInventario.getSelectedRow();
+        txtNombre.setText(jTInventario.getValueAt(seleccion, 0).toString());
+    }//GEN-LAST:event_jTInventarioMouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        frmInicio voc;
+        voc = new frmInicio();
+        voc.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Limpiar;
     private javax.swing.JButton btnInventariar;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTInventario;
     private javax.swing.JTextField txtInventariar;
+    private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
 }

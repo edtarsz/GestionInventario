@@ -13,4 +13,6 @@ import java.util.List;
 public interface IInventario {
 
     public List<Producto> obtenerInventarioCompleto();
+
+    public void actualizarInventario(String nombreProducto, int cantidad);
 }
