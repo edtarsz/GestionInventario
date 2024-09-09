@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.Test;
+package com.mycompany.TestInventariar;
 
 import com.mongodb.client.MongoDatabase;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,14 +23,14 @@ import static org.mockito.Mockito.when;
  *
  * @author Ramosz
  */
-public class AdminInventarioTest {
+public class AdminInventariarTest {
 
     private IConexion conexionMock;
     private MongoDatabase databaseMock;
     private MongoCollection<Document> collectionMock;
     private GestionInventario gestionInventario;
 
-    public AdminInventarioTest() {
+    public AdminInventariarTest() {
 
     }
 
@@ -52,7 +52,7 @@ public class AdminInventarioTest {
     @Test
     void testAgregarNuevoProducto() {
         // Crear un nuevo producto para agregar
-        Producto nuevoProducto = new Producto("Laptop", "Laptop para gaming", "Electrónica", 1200.00, 10);
+        Producto nuevoProducto = new Producto("Principe Avellana", "Galletas sabor avellana", "Galletas", 20.00, 10);
 
         // Ejecutar el método agregarNuevoProducto
         gestionInventario.agregarNuevoProducto(nuevoProducto);
@@ -64,10 +64,10 @@ public class AdminInventarioTest {
     @Test
     void testActualizarProducto() {
         // Crear el producto actualizado
-        Producto productoActualizado = new Producto("Laptop", "Laptop para oficina", "Electrónica", 1000.00, 5);
+        Producto productoActualizado = new Producto("Emperador senzo", "Galletas sabor chocolate", "Galletas", 25.00, 10);
 
         // Ejecutar el método actualizarProducto
-        gestionInventario.actualizarProducto("Laptop", productoActualizado);
+        gestionInventario.actualizarProducto("Principe Avellana", productoActualizado);
 
         // Verificar que el método updateOne fue llamado una vez
         verify(collectionMock, times(1)).updateOne(any(Document.class), any(Document.class));
@@ -76,7 +76,7 @@ public class AdminInventarioTest {
     @Test
     void testEliminarProducto() {
         // Ejecutar el método eliminarProducto
-        gestionInventario.eliminarProducto("Laptop");
+        gestionInventario.eliminarProducto("Principe Avellana");
 
         // Verificar que el método deleteOne fue llamado una vez
         verify(collectionMock, times(1)).deleteOne((Bson) any(Document.class));
