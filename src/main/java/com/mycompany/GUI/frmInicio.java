@@ -4,6 +4,15 @@
  */
 package com.mycompany.GUI;
 
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -16,6 +25,17 @@ import com.mycompany.Main.IInventario;
 import com.mycompany.Main.Producto;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -199,6 +219,118 @@ public class frmInicio extends javax.swing.JFrame {
         llenarTabla(inventarioDespliegue);
     }
 
+    // Método para generar el PDF
+    private String generarPDF() {
+        Document document = new Document();
+        String filePath = "reporte_agotarse.pdf"; // Ruta del archivo PDF
+
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(filePath));
+            document.open();
+
+            // Formato para la fecha y hora
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            String fechaYHora = LocalDateTime.now().format(formatter);
+
+            // Título del reporte
+            Paragraph titulo = new Paragraph("Reporte de Productos por Agotarse", 
+                                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, Font.BOLD, BaseColor.BLACK));
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            document.add(titulo);
+
+            // Añadir fecha y hora de la solicitud
+            Paragraph fecha = new Paragraph("Fecha y hora del reporte: " + fechaYHora,
+                                    FontFactory.getFont(FontFactory.HELVETICA, 12, Font.NORMAL, BaseColor.GRAY));
+            fecha.setAlignment(Element.ALIGN_RIGHT);
+            fecha.setSpacingAfter(20); // Espacio después de la fecha
+            document.add(fecha);
+
+            // Tabla para los datos de los productos
+            PdfPTable table = new PdfPTable(5); // 5 columnas (Nombre, Descripción, Categoría, Precio, Cantidad)
+            table.setWidthPercentage(100); // Ancho completo de la página
+
+            // Añadir encabezados de la tabla
+            table.addCell("Nombre");
+            table.addCell("Descripción");
+            table.addCell("Categoría");
+            table.addCell("Precio");
+            table.addCell("Cantidad");
+
+            // Obtener los datos de la tabla y añadirlos al PDF
+            List<String> datosTabla = obtenerDatosDeLaTabla();
+            for (String dato : datosTabla) {
+                // Separar las celdas por comas (según el formato en obtenerDatosDeLaTabla)
+                String[] celdas = dato.split(", ");
+                for (String celda : celdas) {
+                    table.addCell(celda.split(": ")[1]); // Añadir solo el valor (sin el título)
+                }
+            }
+
+            document.add(table); // Añadir la tabla al documento
+            document.close();
+        } catch (DocumentException | FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return filePath;
+    }
+
+    private List<String> obtenerDatosDeLaTabla() {
+        List<String> datos = new ArrayList<>();
+
+        // Iterar sobre todas las filas de la tabla
+        for (int i = 0; i < jTInventario.getRowCount(); i++) {
+            StringBuilder fila = new StringBuilder();
+
+            // Obtener los valores de cada columna de la fila actual
+            fila.append("Nombre: ").append(jTInventario.getValueAt(i, 0)).append(", ");
+            fila.append("Descripción: ").append(jTInventario.getValueAt(i, 1)).append(", ");
+            fila.append("Categoría: ").append(jTInventario.getValueAt(i, 2)).append(", ");
+            fila.append("Precio: ").append(jTInventario.getValueAt(i, 3)).append(", ");
+            fila.append("Cantidad: ").append(jTInventario.getValueAt(i, 4));
+
+            // Añadir la fila a la lista de datos
+            datos.add(fila.toString());
+        }
+
+        return datos;
+    }
+
+
+    // Método para mostrar la ventana con botones
+    private void mostrarVentanaOpciones(String filePath) {
+        JFrame frame = new JFrame("Opciones");
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout());
+
+        // Botón para descargar el PDF
+        JButton btnDescargar = new JButton("Descargar PDF");
+        btnDescargar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Aquí podrías abrir el PDF o simplemente informar que fue creado
+                JOptionPane.showMessageDialog(null, "PDF generado en: " + filePath);
+                frame.dispose();
+            }
+        });
+
+        // Botón para cerrar la ventana
+        JButton btnCerrar = new JButton("Cerrar");
+        btnCerrar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose(); // Cerrar la ventana
+            }
+        });
+
+        panel.add(btnDescargar);
+        panel.add(btnCerrar);
+
+        frame.add(panel);
+        frame.setSize(300, 100);
+        frame.setLocationRelativeTo(null); // Centrar la ventana
+        frame.setVisible(true);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -549,6 +681,10 @@ public class frmInicio extends javax.swing.JFrame {
 
     private void btnReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteActionPerformed
         buscarPorAgotarse();
+       
+        String filePath = generarPDF();
+
+        mostrarVentanaOpciones(filePath);
     }//GEN-LAST:event_btnReporteActionPerformed
 
     /**
