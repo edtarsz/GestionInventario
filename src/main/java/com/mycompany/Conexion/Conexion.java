@@ -15,8 +15,10 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
 /**
- *
- * @author
+ * @author Eduardo Talavera Ramos | 00000245244
+ * @author Ana Cristina Castro Noriega | 00000247580
+ * @author Jesus Francisco Tapia Maldonado | 00000245136
+ * @date 09/08/2024
  */
 public class Conexion implements IConexion {
 

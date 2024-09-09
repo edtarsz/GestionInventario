@@ -11,8 +11,10 @@ import java.util.logging.Logger;
 import org.bson.Document;
 
 /**
- *
- * @author Ramosz
+ * @author Eduardo Talavera Ramos | 00000245244
+ * @author Ana Cristina Castro Noriega | 00000247580
+ * @author Jesus Francisco Tapia Maldonado | 00000245136
+ * @date 09/08/2024
  */
 public class GestionInventario implements IInventariar {
 

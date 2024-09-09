@@ -40,8 +40,10 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
- *
- * @author Ramosz
+ * @author Eduardo Talavera Ramos | 00000245244
+ * @author Ana Cristina Castro Noriega | 00000247580
+ * @author Jesus Francisco Tapia Maldonado | 00000245136
+ * @date 09/08/2024
  */
 public class frmInicio extends javax.swing.JFrame {
 
@@ -191,17 +193,17 @@ public class frmInicio extends javax.swing.JFrame {
     }
 
     /**
-     * Busca clientes por nombre y actualiza la tabla con los resultados de la
+     * Busca productos por nombre y actualiza la tabla con los resultados de la
      * búsqueda.
      *
-     * @param nombre El nombre del cliente a buscar.
+     * @param nombre El nombre del producto a buscar.
      */
     private void buscarPorNombre(String nombre) {
         List<Producto> inventarioDespliegue = inventario.consultarProductosPorNombre(nombre);
         if (inventarioDespliegue != null && !inventarioDespliegue.isEmpty()) {
             llenarTabla(inventarioDespliegue);
         } else {
-            JOptionPane.showMessageDialog(null, "No se encontraron clientes con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No se encontraron productos con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -210,7 +212,7 @@ public class frmInicio extends javax.swing.JFrame {
         if (inventarioDespliegue != null && !inventarioDespliegue.isEmpty()) {
             llenarTabla(inventarioDespliegue);
         } else {
-            JOptionPane.showMessageDialog(null, "No se encontraron clientes con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No se encontraron productos con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -233,14 +235,14 @@ public class frmInicio extends javax.swing.JFrame {
             String fechaYHora = LocalDateTime.now().format(formatter);
 
             // Título del reporte
-            Paragraph titulo = new Paragraph("Reporte de Productos por Agotarse", 
-                                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, Font.BOLD, BaseColor.BLACK));
+            Paragraph titulo = new Paragraph("Reporte de Productos por Agotarse",
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, Font.BOLD, BaseColor.BLACK));
             titulo.setAlignment(Element.ALIGN_CENTER);
             document.add(titulo);
 
             // Añadir fecha y hora de la solicitud
             Paragraph fecha = new Paragraph("Fecha y hora del reporte: " + fechaYHora,
-                                    FontFactory.getFont(FontFactory.HELVETICA, 12, Font.NORMAL, BaseColor.GRAY));
+                    FontFactory.getFont(FontFactory.HELVETICA, 12, Font.NORMAL, BaseColor.GRAY));
             fecha.setAlignment(Element.ALIGN_RIGHT);
             fecha.setSpacingAfter(20); // Espacio después de la fecha
             document.add(fecha);
@@ -296,7 +298,6 @@ public class frmInicio extends javax.swing.JFrame {
         return datos;
     }
 
-
     // Método para mostrar la ventana con botones
     private void mostrarVentanaOpciones(String filePath) {
         JFrame frame = new JFrame("Opciones");
@@ -331,6 +332,7 @@ public class frmInicio extends javax.swing.JFrame {
         frame.setLocationRelativeTo(null); // Centrar la ventana
         frame.setVisible(true);
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -681,7 +683,7 @@ public class frmInicio extends javax.swing.JFrame {
 
     private void btnReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteActionPerformed
         buscarPorAgotarse();
-       
+
         String filePath = generarPDF();
 
         mostrarVentanaOpciones(filePath);

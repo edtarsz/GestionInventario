@@ -4,6 +4,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mycompany.Conexion.IConexion;
 import com.mycompany.Main.ControlInventario;
 import com.mycompany.Main.Producto;
@@ -22,6 +23,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * @author Eduardo Talavera Ramos | 00000245244
+ * @author Ana Cristina Castro Noriega | 00000247580
+ * @author Jesus Francisco Tapia Maldonado | 00000245136
+ * @date 09/08/2024
+ */
 public class AdminInventarioTest {
 
     private ControlInventario controlInventario;
@@ -45,7 +52,6 @@ public class AdminInventarioTest {
 
     @Test
     void testObtenerInventarioCompleto() {
-        // Datos de prueba
         List<Producto> productos = new ArrayList<>();
         productos.add(new Producto("Producto1", "Descripción1", "Categoría1", 10.0, 5));
         productos.add(new Producto("Producto2", "Descripción2", "Categoría2", 20.0, 10));
@@ -58,7 +64,6 @@ public class AdminInventarioTest {
         });
 
         controlInventario = new ControlInventario(conexionMock);
-
         List<Producto> resultado = controlInventario.obtenerInventarioCompleto();
 
         assertNotNull(resultado);
@@ -82,7 +87,6 @@ public class AdminInventarioTest {
         });
 
         controlInventario = new ControlInventario(conexionMock);
-
         List<Producto> resultado = controlInventario.consultarProductosPorNombre(nombreProducto);
 
         assertNotNull(resultado);
@@ -105,7 +109,6 @@ public class AdminInventarioTest {
         });
 
         controlInventario = new ControlInventario(conexionMock);
-
         List<Producto> resultado = controlInventario.consultarProductosPorCategoria(categoria);
 
         assertNotNull(resultado);
@@ -118,7 +121,6 @@ public class AdminInventarioTest {
         List<Producto> productos = new ArrayList<>();
         productos.add(new Producto("Producto1", "Descripción1", "Categoría1", 10.0, 3));
 
-        // Corregir el paréntesis y agregar la coma que falta
         when(coleccionMock.find(eq(new Document("cantidad", new Document("$lte", 5)))))
                 .thenReturn(findIterableMock);
         when(findIterableMock.into(anyList())).thenAnswer(invocation -> {
@@ -128,7 +130,6 @@ public class AdminInventarioTest {
         });
 
         controlInventario = new ControlInventario(conexionMock);
-
         List<Producto> resultado = controlInventario.consultarProductosPorAgotarse();
 
         assertNotNull(resultado);
@@ -137,24 +138,26 @@ public class AdminInventarioTest {
     }
 
     @Test
-    void testActualizarInventario() {
+    void testInventariar() {
         String nombreProducto = "Producto1";
-        int cantidad = -2;
+        int cantidad = 5;
 
-        // Crear el producto simulado
-        Producto producto = new Producto(nombreProducto, "Descripción", "Categoría", 10.0, 5);
+        Producto productoExistente = new Producto(nombreProducto, "Descripción", "Categoría", 10.0, 10);
 
-        // Configurar el mock para que devuelva el producto cuando se consulta por nombre
-        when(coleccionMock.find(eq(new Document("nombre", nombreProducto)))).thenReturn(findIterableMock);
-        when(findIterableMock.first()).thenReturn(producto);
+        when(coleccionMock.find(eq(Filters.eq("nombre", nombreProducto)))).thenReturn(findIterableMock);
+        when(findIterableMock.first()).thenReturn(productoExistente);
 
-        // Ejecutar el método que se está probando
         controlInventario = new ControlInventario(conexionMock);
-        controlInventario.actualizarInventario(nombreProducto, cantidad);
+        controlInventario.inventariar(nombreProducto, cantidad);
 
-        // Verificar que updateOne se llamó con los argumentos correctos
-        verify(coleccionMock).updateOne(eq(new Document("nombre", nombreProducto)),
-                eq(new Document("$inc", new Document("cantidad", cantidad))));
+        verify(coleccionMock).find(eq(Filters.eq("nombre", nombreProducto)));
+        verify(coleccionMock).updateOne(
+                eq(Filters.eq("nombre", nombreProducto)),
+                eq(new Document("$inc", new Document("cantidad", cantidad)))
+        );
+
+        when(findIterableMock.first()).thenReturn(null);
+        controlInventario.inventariar("ProductoInexistente", cantidad);
+        verify(coleccionMock).find(eq(Filters.eq("nombre", "ProductoInexistente")));
     }
-
 }

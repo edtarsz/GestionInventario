@@ -1,8 +1,10 @@
 package com.mycompany.Exception;
 
 /**
- *
- * @author Ramosz
+ * @author Eduardo Talavera Ramos | 00000245244
+ * @author Ana Cristina Castro Noriega | 00000247580
+ * @author Jesus Francisco Tapia Maldonado | 00000245136
+ * @date 09/08/2024
  */
 public class PersistenciaException extends Exception {
 
@@ -42,6 +44,7 @@ public class PersistenciaException extends Exception {
 
     /**
      * Constructor que establece el mensaje y causa especificados
+     *
      * @param message El detalle del mensaje asociado a la excepción.
      * @param cause La causa que desencadenó esta excepción. Puede ser nulo si
      * la causa no se conoce o no está disponible.

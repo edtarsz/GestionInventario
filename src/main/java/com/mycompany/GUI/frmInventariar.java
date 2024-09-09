@@ -16,8 +16,10 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
- *
- * @author Ramosz
+ * @author Eduardo Talavera Ramos | 00000245244
+ * @author Ana Cristina Castro Noriega | 00000247580
+ * @author Jesus Francisco Tapia Maldonado | 00000245136
+ * @date 09/08/2024
  */
 public class frmInventariar extends javax.swing.JFrame {
 
@@ -83,17 +85,17 @@ public class frmInventariar extends javax.swing.JFrame {
     }
 
     /**
-     * Busca clientes por nombre y actualiza la tabla con los resultados de la
+     * Busca productos por nombre y actualiza la tabla con los resultados de la
      * búsqueda.
      *
-     * @param nombre El nombre del cliente a buscar.
+     * @param nombre El nombre del producto a buscar.
      */
     private void buscarPorNombre(String nombre) {
         List<Producto> inventarioDespliegue = inventario.consultarProductosPorNombre(nombre);
         if (inventarioDespliegue != null && !inventarioDespliegue.isEmpty()) {
             llenarTabla(inventarioDespliegue);
         } else {
-            JOptionPane.showMessageDialog(null, "No se encontraron clientes con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No se encontraron productos con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -102,7 +104,7 @@ public class frmInventariar extends javax.swing.JFrame {
         if (inventarioDespliegue != null && !inventarioDespliegue.isEmpty()) {
             llenarTabla(inventarioDespliegue);
         } else {
-            JOptionPane.showMessageDialog(null, "No se encontraron clientes con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No se encontraron productos con el nombre especificado.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -297,7 +299,6 @@ public class frmInventariar extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnInventariarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventariarActionPerformed
-        // Crear un StringBuilder para almacenar los cambios en el inventario
         StringBuilder cambiosInventario = new StringBuilder();
         int seleccion = jTInventario.getSelectedRow();
         String nombrePrevio = jTInventario.getValueAt(seleccion, 0).toString();
@@ -305,25 +306,20 @@ public class frmInventariar extends javax.swing.JFrame {
         cambiosInventario.append("Producto: ").append(nombrePrevio).append(", Cantidad a actualizar: ").append(txtInventariar.getText()).append("x\n");
 
         if (seleccion == -1) {
-            // No se ha seleccionado ninguna fila, mostrar un mensaje o manejar el caso de manera apropiada
             mostrarMensajeError("No se ha seleccionado ningún producto.");
-            return; // Salir del método para evitar continuar con la lógica que depende de la selección
+            return;
         }
 
         // Mostrar un JOptionPane para confirmar la actualización del inventario
         int opcionConfirmacion = JOptionPane.showConfirmDialog(null, "¿Desea confirmar la actualización del inventario?\n\nCambios a realizar:\n\n" + cambiosInventario.toString(), "Confirmar actualización de inventario", JOptionPane.YES_NO_OPTION);
 
-        // Verificar la respuesta del usuario
         if (opcionConfirmacion == JOptionPane.YES_OPTION) {
-            // Iterar sobre la lista de productos para actualizar el inventario
-            inventario.actualizarInventario(nombrePrevio, Integer.parseInt(txtInventariar.getText()));
+            inventario.inventariar(nombrePrevio, Integer.parseInt(txtInventariar.getText()));
 
-            // Actualizar la tabla y limpiar la lista de productos
             resetCantidades();
             llenarTabla(productos);
         } else {
             resetCantidades();
-            // El usuario seleccionó "No" o cerró el diálogo, no realizar ninguna acción adicional
         }
     }//GEN-LAST:event_btnInventariarActionPerformed
 
@@ -336,7 +332,6 @@ public class frmInventariar extends javax.swing.JFrame {
     }//GEN-LAST:event_formMouseClicked
 
     private void jTInventarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTInventarioMouseClicked
-        // TODO add your handling code here:
         int seleccion = jTInventario.getSelectedRow();
         txtNombre.setText(jTInventario.getValueAt(seleccion, 0).toString());
     }//GEN-LAST:event_jTInventarioMouseClicked
